@@ -3,6 +3,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import PostForm from "./components/PostForm";
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -27,6 +28,7 @@ function App() {
           >
             Log Out
           </button>
+          <PostForm />
         </div>
       ) : (
         <div>
