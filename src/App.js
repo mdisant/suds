@@ -4,6 +4,7 @@ import { auth } from "./firebase";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import PostForm from "./components/PostForm";
+import Feed from "./components/Feed";
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
@@ -29,6 +30,7 @@ function App() {
             Log Out
           </button>
           <PostForm />
+          <Feed />
         </div>
       ) : (
         <div>
