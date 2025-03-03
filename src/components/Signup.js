@@ -1,20 +1,27 @@
 import { useState } from "react";
 import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+import { doc, setDoc, collection, query, where, getDocs } from "firebase/firestore";
+import "./Auth.css"; // Shared CSS file
 
 function Signup({ setShowSignup }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [favoriteBeer, setFavoriteBeer] = useState("");
+  const [city, setCity] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const signup = async (e) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setError("All fields are required");
+    if (!email || !password || !firstName || !lastName || !username || !phoneNumber) {
+      setError("Email, password, first name, last name, username, and phone number are required");
       return;
     }
     
@@ -32,13 +39,31 @@ function Signup({ setShowSignup }) {
       setLoading(true);
       setError("");
       
+      // Check if username already exists
+      const usernameQuery = query(
+        collection(db, "users"), 
+        where("username", "==", username)
+      );
+      const usernameSnapshot = await getDocs(usernameQuery);
+      
+      if (!usernameSnapshot.empty) {
+        setError("Username already taken. Please choose another.");
+        setLoading(false);
+        return;
+      }
+      
       // Create the user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
-      // Add user to Firestore
+      // Add user to Firestore with additional fields
       await setDoc(doc(db, "users", userCredential.user.uid), {
-        email: email,
-        username: email.split("@")[0],
+        email,
+        firstName,
+        lastName,
+        username,
+        phoneNumber,
+        favoriteBeer: favoriteBeer || "",
+        city: city || "",
         createdAt: new Date().toISOString()
       });
       
@@ -54,83 +79,154 @@ function Signup({ setShowSignup }) {
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-amber-700">Join Suds 🍺</h1>
-        <p className="text-gray-600 mt-2">Create an account to share your brews</p>
+    <div className="auth-container signup-extended">
+      <div className="auth-header">
+        <h2>Join the Brew Crew</h2>
+        <p>Create an account to share your favorite beers</p>
       </div>
+
+      {error && <div className="auth-error">{error}</div>}
       
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
+      <form onSubmit={signup} className="auth-form">
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="firstName" className="required-field">First Name</label>
+            <input
+              id="firstName"
+              type="text"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              placeholder="John"
+              disabled={loading}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="lastName" className="required-field">Last Name</label>
+            <input
+              id="lastName"
+              type="text"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              placeholder="Doe"
+              disabled={loading}
+              required
+            />
+          </div>
         </div>
-      )}
-      
-      <form onSubmit={signup}>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-            Email
-          </label>
+        
+        <div className="form-group">
+          <label htmlFor="username" className="required-field">Username</label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="beerlover123"
+            disabled={loading}
+            required
+          />
+        </div>
+        
+        <div className="form-group">
+          <label htmlFor="email" className="required-field">Email</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="your@email.com"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
             disabled={loading}
+            required
           />
         </div>
         
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-            Password
-          </label>
+        <div className="form-group">
+          <label htmlFor="phoneNumber" className="required-field">Phone Number</label>
           <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+            id="phoneNumber"
+            type="tel"
+            value={phoneNumber}
+            onChange={(e) => setPhoneNumber(e.target.value)}
+            placeholder="(123) 456-7890"
             disabled={loading}
+            required
           />
         </div>
         
-        <div className="mb-6">
-          <label htmlFor="confirmPassword" className="block text-gray-700 font-medium mb-2">
-            Confirm Password
-          </label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            placeholder="••••••••"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-            disabled={loading}
-          />
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="favoriteBeer">Favorite Beer (Optional)</label>
+            <input
+              id="favoriteBeer"
+              type="text"
+              value={favoriteBeer}
+              onChange={(e) => setFavoriteBeer(e.target.value)}
+              placeholder="IPA, Stout, etc."
+              disabled={loading}
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="city">City (Optional)</label>
+            <input
+              id="city"
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="NYC"
+              disabled={loading}
+            />
+          </div>
         </div>
         
-        <button
-          type="submit"
+        <div className="form-row">
+          <div className="form-group">
+            <label htmlFor="password" className="required-field">Password</label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              disabled={loading}
+              required
+            />
+          </div>
+          
+          <div className="form-group">
+            <label htmlFor="confirmPassword" className="required-field">Confirm Password</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="••••••••"
+              disabled={loading}
+              required
+            />
+          </div>
+        </div>
+        
+        <button 
+          type="submit" 
+          className="auth-button primary"
           disabled={loading}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg transition disabled:opacity-50"
         >
-          {loading ? "Creating Account..." : "Sign Up"}
+          {loading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
       
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">
-          Already have an account?{" "}
-          <button
-            onClick={() => setShowSignup(false)}
-            className="text-amber-600 font-medium hover:underline focus:outline-none"
-          >
-            Log In
-          </button>
-        </p>
+      <div className="auth-footer">
+        <p>Already have an account?</p>
+        <button 
+          onClick={() => setShowSignup(false)}
+          className="auth-button secondary"
+          disabled={loading}
+        >
+          Sign In
+        </button>
       </div>
     </div>
   );

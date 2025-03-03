@@ -1,0 +1,194 @@
+/* Reset the auth container styling completely */
+.auth-container {
+  max-width: 450px;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  padding: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 0.5rem;
+}
+
+.auth-header p {
+  color: #6b7280;
+  font-size: 1rem;
+}
+
+.auth-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.auth-form {
+  margin-bottom: 0;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #4b5563;
+  font-size: 0.875rem;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: border-color 0.15s ease-in-out;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #b45309;
+  box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.2);
+}
+
+.form-group input::placeholder {
+  color: #9ca3af;
+}
+
+.auth-button {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+}
+
+.auth-button.primary {
+  background-color: #b45309;
+  color: white;
+}
+
+.auth-button.primary:hover:not(:disabled) {
+  background-color: #92400e;
+}
+
+.auth-button.secondary {
+  background-color: transparent;
+  color: #b45309;
+  border: 1px solid #b45309;
+  margin-top: 0.5rem;
+}
+
+.auth-button.secondary:hover:not(:disabled) {
+  background-color: #fef3c7;
+}
+
+.auth-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  margin-bottom: 0;
+}
+
+.auth-footer p {
+  margin-bottom: 0.5rem;
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .auth-container {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+}
+
+/* Add these new styles to your existing Auth.css file */
+
+.signup-extended {
+  max-width: 600px;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+  flex: 1;
+  margin-bottom: 0.5rem;
+}
+
+/* Responsive adjustments for the form rows */
+@media (max-width: 640px) {
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+  
+  .form-row .form-group {
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* Remove ALL label content manipulation rules */
+label[for]:after,
+label[for][required]:after,
+label::after {
+  content: none !important;
+}
+
+/* Add a simple required field indicator manually in the HTML instead */
+.required-field::after {
+  content: " *";
+  color: #b45309;
+}
+
+/* Optional fields don't get the asterisk */
+label[for="favoriteBeer"]::after,
+label[for="city"]::after {
+  content: "";
+}
+
+/* Update the auth-wrapper in Auth.css */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: calc(100vh - 100px);
+  padding: 0 1rem;
+  background-color: #fffbeb;
+} 

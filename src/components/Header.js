@@ -1,27 +1,26 @@
 import { auth } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
-import beerLogo from "../assets/beer-logo.png"; // You'll need to add this asset
+import "./Header.css"; // We'll create this for the custom font
 
-function Header() {
+function Header({ setActiveTab }) {
   const [user] = useAuthState(auth);
   
   return (
-    <header className="sticky top-0 z-10 bg-amber-700 text-white shadow-md">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          {/* Replace with your actual logo */}
-          <img src={beerLogo} alt="Suds Logo" className="h-10 w-10" />
-          <h1 className="text-2xl font-bold">Suds 🍺</h1>
+    <header className="sticky top-0 z-10 header-beer shadow-md">
+      <div className="container mx-auto px-4 header-container">
+        {/* Centered logo text */}
+        <div className="text-center">
+          <h1 className="suds-logo">Suds 🍺</h1>
         </div>
         
+        {/* User controls - only show account button when logged in */}
         {user && (
-          <div className="flex items-center space-x-4">
-            <span className="hidden md:inline">Cheers, {user.email.split("@")[0]}!</span>
+          <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center">
             <button 
-              onClick={() => auth.signOut()}
-              className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-full transition"
+              onClick={() => setActiveTab("account")}
+              className="bg-amber-600 hover:bg-amber-700 text-white px-3 py-1 text-sm rounded-full transition"
             >
-              Log Out
+              My Account
             </button>
           </div>
         )}

@@ -1,9 +1,11 @@
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
+import "./Auth.css"; // We'll create this shared CSS file
 
 function Login({ setShowSignup }) {
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -11,86 +13,124 @@ function Login({ setShowSignup }) {
   const login = async (e) => {
     e.preventDefault();
     
-    if (!email || !password) {
-      setError("Email and password are required");
+    if (!identifier || !password) {
+      setError("Username/Email and password are required");
       return;
     }
     
     try {
       setLoading(true);
       setError("");
-      await signInWithEmailAndPassword(auth, email, password);
+      
+      let email = identifier;
+      
+      // Check if the identifier is a username instead of an email
+      if (!identifier.includes('@')) {
+        try {
+          // Look up the email by username
+          const usersRef = collection(db, "users");
+          const q = query(usersRef, where("username", "==", identifier));
+          const querySnapshot = await getDocs(q);
+          
+          if (querySnapshot.empty) {
+            setError("No user found with that username");
+            setLoading(false);
+            return;
+          }
+          
+          // Get the email from the first matching user
+          email = querySnapshot.docs[0].data().email;
+        } catch (err) {
+          console.error("Error looking up username:", err);
+          setError("Error looking up username. Please try with your email instead.");
+          setLoading(false);
+          return;
+        }
+      }
+      
+      // Sign in with the email
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // Success - the auth state in App.js will update automatically
+      } catch (authErr) {
+        console.error("Authentication error:", authErr);
+        
+        // Provide more specific error messages
+        if (authErr.code === 'auth/invalid-credential' || 
+            authErr.code === 'auth/invalid-email' || 
+            authErr.code === 'auth/user-not-found') {
+          setError("Invalid email or password. Please try again.");
+        } else if (authErr.code === 'auth/wrong-password') {
+          setError("Incorrect password. Please try again.");
+        } else if (authErr.code === 'auth/too-many-requests') {
+          setError("Too many failed login attempts. Please try again later.");
+        } else {
+          setError("Login failed: " + authErr.message);
+        }
+        
+        setLoading(false);
+      }
     } catch (err) {
-      console.error(err);
-      setError("Invalid email or password. Try again!");
-    } finally {
+      console.error("General login error:", err);
+      setError("Login failed. Please try again later.");
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold text-amber-700">Suds 🍺</h1>
-        <p className="text-gray-600 mt-2">Share your brews with friends</p>
+    <div className="auth-container">
+      <div className="auth-header">
+        <h2>Welcome Back!</h2>
+        <p>Sign in to continue your beer journey</p>
       </div>
+
+      {error && <div className="auth-error">{error}</div>}
       
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-      
-      <form onSubmit={login}>
-        <div className="mb-4">
-          <label htmlFor="email" className="block text-gray-700 font-medium mb-2">
-            Email
-          </label>
+      <form onSubmit={login} className="auth-form">
+        <div className="form-group">
+          <label htmlFor="identifier" className="required-field">Username or Email</label>
           <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="your@email.com"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+            id="identifier"
+            type="text"
+            value={identifier}
+            onChange={(e) => setIdentifier(e.target.value)}
+            placeholder="username or your@email.com"
             disabled={loading}
+            required
           />
         </div>
         
-        <div className="mb-6">
-          <label htmlFor="password" className="block text-gray-700 font-medium mb-2">
-            Password
-          </label>
+        <div className="form-group">
+          <label htmlFor="password" className="required-field">Password</label>
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
             disabled={loading}
+            required
           />
         </div>
         
-        <button
-          type="submit"
+        <button 
+          type="submit" 
+          className="auth-button primary"
           disabled={loading}
-          className="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-lg transition disabled:opacity-50"
         >
-          {loading ? "Logging in..." : "Log In"}
+          {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
       
-      <div className="mt-6 text-center">
-        <p className="text-gray-600">
-          Don't have an account?{" "}
-          <button
-            onClick={() => setShowSignup(true)}
-            className="text-amber-600 font-medium hover:underline focus:outline-none"
-          >
-            Sign Up
-          </button>
-        </p>
+      <div className="auth-footer">
+        <p>Don't have an account?</p>
+        <button 
+          onClick={() => setShowSignup(true)}
+          className="auth-button secondary"
+          disabled={loading}
+        >
+          Create Account
+        </button>
       </div>
     </div>
   );

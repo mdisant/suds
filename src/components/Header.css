@@ -1,0 +1,45 @@
+/* Use Pacifico - a fun, casual script font that works well for beer-related branding */
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+.suds-logo {
+  font-family: 'Pacifico', cursive;
+  font-size: 3rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: #92400e; /* Amber-800 - a rich beer color */
+  transition: all 0.3s ease;
+  display: block;
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  padding: 0.75rem 0; /* Consistent padding */
+  line-height: 1.1;
+}
+
+.suds-logo:hover {
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+  transform: scale(1.02);
+}
+
+/* Header with fixed height */
+.header-beer {
+  background-color: #fffbeb; /* Amber-50 - a light beer color */
+  height: 80px; /* Fixed height */
+  display: flex;
+  align-items: center;
+}
+
+/* Compact header container */
+.header-container {
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .suds-logo {
+    font-size: 3.5rem;
+  }
+  
+  .header-beer {
+    height: 90px; /* Slightly taller on larger screens */
+  }
+}
