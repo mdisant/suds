@@ -1,0 +1,382 @@
+/* Feed container */
+.feed-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 1rem 0;
+  background-color: #fffbeb;
+}
+
+/* Post card styling */
+.post-card {
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+
+/* Post header with username */
+.post-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.post-user-pic {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-user-placeholder {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #92400e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.post-username {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1f2937;
+}
+
+/* Post image */
+.post-image-container {
+  width: 100%;
+  position: relative;
+  background-color: #f9fafb;
+}
+
+.post-image {
+  width: 100%;
+  max-height: 600px;
+  object-fit: cover;
+  display: block;
+}
+
+.post-image-placeholder {
+  width: 100%;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fef3c7;
+}
+
+.beer-emoji {
+  font-size: 4rem;
+}
+
+/* Post actions */
+.post-actions {
+  padding: 0.75rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.cheers-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #fef3c7;
+  color: #92400e;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cheers-button:hover {
+  background-color: #fde68a;
+}
+
+.cheers-button.cheered {
+  background-color: #92400e;
+  color: white;
+}
+
+.cheers-icon {
+  font-size: 1.25rem;
+}
+
+.cheers-count {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Post content */
+.post-content {
+  padding: 1rem;
+}
+
+.beer-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem 0;
+  color: #1f2937;
+}
+
+.brewery-name {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-bottom: 0.75rem;
+}
+
+.post-description {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #4b5563;
+  margin-bottom: 0.75rem;
+}
+
+.beer-rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.star-rating {
+  display: inline-flex;
+}
+
+.star {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+
+.empty-star {
+  color: #d1d5db;
+}
+
+.post-timestamp {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.5rem;
+}
+
+/* Loading state */
+.feed-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.loading-beer {
+  text-align: center;
+}
+
+.beer-mug {
+  font-size: 3rem;
+  animation: pour 2s infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes pour {
+  0% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(30deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+  75% {
+    transform: rotate(-5deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+/* Empty feed state */
+.empty-feed {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-beer {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.empty-feed h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 0.5rem;
+}
+
+.empty-feed p {
+  color: #6b7280;
+}
+
+/* Error state */
+.feed-error {
+  text-align: center;
+  padding: 2rem;
+  color: #b91c1c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .feed-container {
+    padding: 0.5rem;
+  }
+  
+  .post-card {
+    border-radius: 0;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Add this to your Feed.css file */
+
+.post-username-button {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #1f2937;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.post-username-button:hover {
+  color: #92400e;
+  text-decoration: underline;
+}
+
+/* Add these styles to your Feed.css file */
+
+.post-user-pic-button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.post-user-pic-button:hover {
+  transform: scale(1.05);
+}
+
+.post-user-pic {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.post-user-placeholder {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #92400e;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+/* Add these styles to your Feed.css file */
+
+.post-location {
+  display: flex;
+  align-items: center;
+  margin-left: 0.25rem;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.location-dot {
+  margin: 0 0.25rem;
+}
+
+.location-text {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.beer-header {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.25rem;
+}
+
+.beer-type {
+  font-size: 0.8rem;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+}
+
+/* Add these styles to your Feed.css file */
+
+.feed-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 0.5rem;
+}
+
+.feed-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0;
+}
+
+.refresh-button {
+  background: none;
+  border: none;
+  color: #92400e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border-radius: 9999px;
+  transition: background-color 0.2s;
+}
+
+.refresh-button:hover {
+  background-color: #fef3c7;
+}
+
+.refresh-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+} 

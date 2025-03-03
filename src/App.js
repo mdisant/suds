@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth, db } from "./firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
@@ -9,26 +9,35 @@ import Feed from "./components/Feed";
 import Header from "./components/Header";
 import UserSearch from "./components/UserSearch";
 import Account from "./components/Account";
+import UserProfile from "./components/UserProfile";
 import './App.css';
 
 function App() {
   const [user, loading, error] = useAuthState(auth);
   const [showSignup, setShowSignup] = useState(false);
   const [activeTab, setActiveTab] = useState("feed");
-  const [userCount, setUserCount] = useState(0);
-
+  const [viewingUserId, setViewingUserId] = useState(null);
+  const feedRefreshRef = useRef(null);
+  
   useEffect(() => {
-    // Get rough count of users for display
     if (user) {
-      const fetchUserCount = async () => {
-        const q = query(collection(db, "users"));
-        const snapshot = await getDocs(q);
-        setUserCount(snapshot.size);
-      };
-      
-      fetchUserCount().catch(console.error);
+      setActiveTab("feed");
     }
   }, [user]);
+  
+  // Function to refresh the feed
+  const refreshFeed = () => {
+    if (feedRefreshRef.current) {
+      feedRefreshRef.current();
+    }
+  };
+  
+  // When activeTab changes to feed, refresh the feed
+  useEffect(() => {
+    if (activeTab === "feed") {
+      refreshFeed();
+    }
+  }, [activeTab]);
 
   if (loading) {
     return (
@@ -48,12 +57,17 @@ function App() {
   if (!user) {
     return (
       <div className="app-container">
-        <Header setActiveTab={setActiveTab} />
+        <Header 
+          setActiveTab={setActiveTab} 
+          refreshFeed={refreshFeed} 
+          isLoggedIn={false} 
+          setViewingUserId={setViewingUserId}
+        />
         <div className="auth-wrapper">
           {showSignup ? (
             <Signup setShowSignup={setShowSignup} />
           ) : (
-            <Login setShowSignup={setShowSignup} />
+            <Login setShowSignup={setShowSignup} setActiveTab={setActiveTab} />
           )}
         </div>
       </div>
@@ -62,42 +76,52 @@ function App() {
 
   return (
     <div className="app-container">
-      <Header setActiveTab={setActiveTab} />
+      <Header 
+        setActiveTab={setActiveTab} 
+        refreshFeed={refreshFeed} 
+        isLoggedIn={true} 
+        setViewingUserId={setViewingUserId}
+      />
       <div className="main-content">
-        {activeTab !== "account" && (
-          <>
-            <div className="user-stats">
-              <div className="user-stats-count">{userCount}</div>
-              <div className="user-stats-label">Beer Enthusiasts</div>
-            </div>
-            
-            <div className="tab-navigation">
-              <button 
-                className={`tab-button ${activeTab === "feed" ? "active" : ""}`}
-                onClick={() => setActiveTab("feed")}
-              >
-                Feed
-              </button>
-              <button 
-                className={`tab-button ${activeTab === "post" ? "active" : ""}`}
-                onClick={() => setActiveTab("post")}
-              >
-                Post a Brew
-              </button>
-              <button 
-                className={`tab-button ${activeTab === "search" ? "active" : ""}`}
-                onClick={() => setActiveTab("search")}
-              >
-                Find Friends
-              </button>
-            </div>
-          </>
+        {activeTab !== "account" && activeTab !== "profile" && (
+          <div className="tab-navigation">
+            <button 
+              className={`tab-button ${activeTab === "feed" ? "active" : ""}`}
+              onClick={() => {
+                setActiveTab("feed");
+                refreshFeed();
+              }}
+            >
+              Feed
+            </button>
+            <button 
+              className={`tab-button ${activeTab === "post" ? "active" : ""}`}
+              onClick={() => setActiveTab("post")}
+            >
+              Post a Brew
+            </button>
+            <button 
+              className={`tab-button ${activeTab === "search" ? "active" : ""}`}
+              onClick={() => setActiveTab("search")}
+            >
+              Find Friends
+            </button>
+          </div>
         )}
         
-        {activeTab === "feed" && <Feed />}
-        {activeTab === "post" && <PostForm />}
+        {activeTab === "feed" && (
+          <Feed 
+            setActiveTab={setActiveTab} 
+            setViewingUserId={setViewingUserId} 
+            setRefreshFunction={(refreshFunc) => {
+              feedRefreshRef.current = refreshFunc;
+            }}
+          />
+        )}
+        {activeTab === "post" && <PostForm setActiveTab={setActiveTab} />}
         {activeTab === "search" && <UserSearch />}
         {activeTab === "account" && <Account setActiveTab={setActiveTab} />}
+        {activeTab === "profile" && <UserProfile userId={viewingUserId} setActiveTab={setActiveTab} />}
       </div>
     </div>
   );

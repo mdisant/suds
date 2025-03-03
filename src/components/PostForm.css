@@ -1,0 +1,247 @@
+/* Post Form Container */
+.post-form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+  background-color: #fffbeb;
+}
+
+.post-form-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1f2937;
+  text-align: center;
+}
+
+/* Form Layout */
+.post-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+}
+
+.post-form-image-section {
+  grid-column: 1;
+}
+
+.post-form-details {
+  grid-column: 2;
+}
+
+/* Image Upload Area */
+.image-upload-area {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 2px dashed #d1d5db;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  background-color: #f9fafb;
+}
+
+.image-upload-area:hover {
+  border-color: #92400e;
+}
+
+.image-upload-placeholder {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  text-align: center;
+  color: #6b7280;
+}
+
+.upload-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #92400e;
+  margin-bottom: 1rem;
+}
+
+.upload-note {
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  color: #9ca3af;
+}
+
+.image-preview-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hidden-file-input {
+  display: none;
+}
+
+/* Form Groups */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.required-field::after {
+  content: "*";
+  color: #ef4444;
+  margin-left: 0.25rem;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  background-color: #f9fafb;
+  font-size: 0.9375rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #92400e;
+  box-shadow: 0 0 0 3px rgba(146, 64, 14, 0.1);
+}
+
+textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+/* Rating Input */
+.rating-input {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.rating-star {
+  background: none;
+  border: none;
+  font-size: 1.75rem;
+  color: #d1d5db;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.rating-star:hover {
+  transform: scale(1.1);
+}
+
+.rating-star.active {
+  color: #f59e0b;
+}
+
+.rating-text {
+  margin-left: 0.75rem;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* Submit Button */
+.post-submit-button {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #92400e;
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-top: 1rem;
+}
+
+.post-submit-button:hover {
+  background-color: #78350f;
+}
+
+.post-submit-button:disabled {
+  background-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+/* Error and Success Messages */
+.post-form-error {
+  background-color: #fee2e2;
+  color: #b91c1c;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.post-form-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #d1fae5;
+  color: #065f46;
+  padding: 0.75rem;
+  border-radius: 0.375rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.success-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .post-form {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .post-form-image-section,
+  .post-form-details {
+    grid-column: 1;
+  }
+  
+  .image-upload-area {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+} 

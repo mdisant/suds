@@ -1,141 +1,219 @@
 import { useState, useEffect } from "react";
-import { auth, db } from "../firebase";
-import { collection, query, where, getDocs, doc, setDoc, deleteDoc, getDoc } from "firebase/firestore";
+import { db, auth } from "../firebase";
+import { collection, query, getDocs, doc, getDoc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import "./UserSearch.css";
 
 function UserSearch() {
-  const [searchTerm, setSearchTerm] = useState("");
   const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [followStatus, setFollowStatus] = useState({});
-
-  // Check if current user follows the displayed users
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [following, setFollowing] = useState([]);
+  
   useEffect(() => {
-    const checkFollowStatus = async () => {
-      if (users.length === 0) return;
-
-      const newFollowStatus = { ...followStatus };
-      
-      for (const user of users) {
-        // Skip checking yourself
-        if (user.id === auth.currentUser.uid) continue;
+    const fetchUsers = async () => {
+      try {
+        setLoading(true);
         
-        const followRef = doc(db, "follows", `${auth.currentUser.uid}_${user.id}`);
-        const followDoc = await getDoc(followRef);
+        // Get current user's following list
+        const currentUserDoc = await getDoc(doc(db, "users", auth.currentUser.uid));
+        const currentUserData = currentUserDoc.data();
+        setFollowing(currentUserData.following || []);
         
-        newFollowStatus[user.id] = followDoc.exists();
+        // Get all users
+        const usersQuery = query(collection(db, "users"));
+        const usersSnapshot = await getDocs(usersQuery);
+        
+        const usersData = [];
+        
+        // Process each user and calculate total cheers
+        for (const userDoc of usersSnapshot.docs) {
+          // Skip current user
+          if (userDoc.id === auth.currentUser.uid) continue;
+          
+          const userData = userDoc.data();
+          
+          // Get user's posts to calculate total cheers
+          const postsQuery = query(collection(db, "posts"));
+          const postsSnapshot = await getDocs(postsQuery);
+          
+          let totalCheers = 0;
+          
+          // Count cheers on user's posts
+          postsSnapshot.docs.forEach(postDoc => {
+            const postData = postDoc.data();
+            if (postData.userId === userDoc.id) {
+              totalCheers += (postData.cheersBy?.length || 0);
+            }
+          });
+          
+          usersData.push({
+            id: userDoc.id,
+            username: userData.username,
+            profilePicUrl: userData.profilePicUrl,
+            bio: userData.bio,
+            totalCheers: totalCheers,
+            isFollowing: following.includes(userDoc.id)
+          });
+        }
+        
+        // Sort users by total cheers (highest first)
+        usersData.sort((a, b) => b.totalCheers - a.totalCheers);
+        
+        setUsers(usersData);
+        setFilteredUsers(usersData);
+      } catch (err) {
+        console.error("Error fetching users:", err);
+        setError("Failed to load users. Please try again later.");
+      } finally {
+        setLoading(false);
       }
-      
-      setFollowStatus(newFollowStatus);
     };
     
-    checkFollowStatus();
-  }, [users]);
-
-  const handleSearch = async () => {
-    if (!searchTerm.trim()) return;
-    
-    setLoading(true);
-    
-    try {
-      // Search by email (case insensitive would require a different approach in Firestore)
-      const q = query(
-        collection(db, "users"),
-        where("email", ">=", searchTerm),
-        where("email", "<=", searchTerm + "\uf8ff")
+    fetchUsers();
+  }, []);
+  
+  // Filter users based on search term
+  useEffect(() => {
+    if (searchTerm.trim() === "") {
+      setFilteredUsers(users);
+    } else {
+      const filtered = users.filter(user => 
+        user.username.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      
-      const querySnapshot = await getDocs(q);
-      
-      const userResults = querySnapshot.docs
-        .map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }))
-        .filter(user => user.id !== auth.currentUser.uid); // Filter out current user
-      
-      setUsers(userResults);
-    } catch (error) {
-      console.error("Error searching users:", error);
-    } finally {
-      setLoading(false);
+      setFilteredUsers(filtered);
     }
-  };
-
-  const toggleFollow = async (userId) => {
-    const followId = `${auth.currentUser.uid}_${userId}`;
-    const followRef = doc(db, "follows", followId);
-    
+  }, [searchTerm, users]);
+  
+  const handleFollow = async (userId) => {
     try {
-      if (followStatus[userId]) {
+      const currentUserRef = doc(db, "users", auth.currentUser.uid);
+      
+      // Check if already following
+      const isFollowing = following.includes(userId);
+      
+      if (isFollowing) {
         // Unfollow
-        await deleteDoc(followRef);
-        setFollowStatus({ ...followStatus, [userId]: false });
+        await updateDoc(currentUserRef, {
+          following: arrayRemove(userId)
+        });
+        
+        setFollowing(following.filter(id => id !== userId));
+        
+        // Update local state
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, isFollowing: false } : user
+        ));
+        setFilteredUsers(filteredUsers.map(user => 
+          user.id === userId ? { ...user, isFollowing: false } : user
+        ));
       } else {
         // Follow
-        await setDoc(followRef, {
-          followerId: auth.currentUser.uid,
-          followingId: userId,
-          timestamp: new Date().toISOString()
+        await updateDoc(currentUserRef, {
+          following: arrayUnion(userId)
         });
-        setFollowStatus({ ...followStatus, [userId]: true });
+        
+        setFollowing([...following, userId]);
+        
+        // Update local state
+        setUsers(users.map(user => 
+          user.id === userId ? { ...user, isFollowing: true } : user
+        ));
+        setFilteredUsers(filteredUsers.map(user => 
+          user.id === userId ? { ...user, isFollowing: true } : user
+        ));
       }
-    } catch (error) {
-      console.error("Error toggling follow:", error);
+    } catch (err) {
+      console.error("Error updating follow status:", err);
     }
   };
-
+  
   return (
-    <div>
-      <div className="flex mb-6">
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by email..."
-          className="flex-1 p-3 border border-amber-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-        />
-        <button
-          onClick={handleSearch}
-          disabled={loading}
-          className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-6 rounded-r-lg transition disabled:opacity-50"
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
+    <div className="search-container">
+      <div className="search-header">
+        <h2 className="search-title">Find Friends</h2>
+        <p className="search-subtitle">Connect with other Suds users</p>
       </div>
       
-      <div>
-        {users.length === 0 ? (
-          <div className="text-center py-6 text-gray-500">
-            {searchTerm ? "No users found matching your search" : "Search for beer enthusiasts by email"}
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between bg-amber-50 p-4 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-amber-200 rounded-full flex items-center justify-center text-amber-800 text-xl font-bold">
-                    {user.email.charAt(0).toUpperCase()}
+      <div className="search-bar-container">
+        <div className="search-bar">
+          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+          <input
+            type="text"
+            placeholder="Search by username..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          {searchTerm && (
+            <button 
+              className="clear-search-button"
+              onClick={() => setSearchTerm("")}
+              aria-label="Clear search"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
+      
+      {loading ? (
+        <div className="search-loading">
+          <p>Loading users...</p>
+        </div>
+      ) : error ? (
+        <div className="search-error">
+          <p>{error}</p>
+        </div>
+      ) : (
+        <div className="users-list">
+          {filteredUsers.length === 0 ? (
+            <div className="no-users-found">
+              <p>No users found matching "{searchTerm}"</p>
+            </div>
+          ) : (
+            filteredUsers.map(user => (
+              <div key={user.id} className="user-card">
+                <div className="user-info">
+                  <div className="user-avatar">
+                    {user.profilePicUrl ? (
+                      <img 
+                        src={user.profilePicUrl} 
+                        alt={`${user.username}'s profile`}
+                        className="user-avatar-img"
+                      />
+                    ) : (
+                      <div className="user-avatar-placeholder">
+                        {user.username.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
-                  <div className="ml-4">
-                    <h3 className="font-semibold">{user.username || user.email.split("@")[0]}</h3>
-                    <p className="text-sm text-gray-500">{user.email}</p>
+                  <div className="user-details">
+                    <h3 className="user-username">{user.username}</h3>
+                    {user.bio && <p className="user-bio">{user.bio}</p>}
+                    <div className="user-stats">
+                      <div className="user-cheers">
+                        <span className="cheers-icon">🍻</span>
+                        <span className="cheers-count">{user.totalCheers}</span>
+                        <span className="cheers-label">total cheers</span>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <button
-                  onClick={() => toggleFollow(user.id)}
-                  className={`py-2 px-4 rounded-full transition ${
-                    followStatus[user.id] 
-                      ? "bg-amber-100 text-amber-800 hover:bg-amber-200" 
-                      : "bg-amber-500 text-white hover:bg-amber-600"
-                  }`}
+                <button 
+                  className={`follow-button ${user.isFollowing ? 'following' : ''}`}
+                  onClick={() => handleFollow(user.id)}
                 >
-                  {followStatus[user.id] ? "Following" : "Follow"}
+                  {user.isFollowing ? 'Following' : 'Follow'}
                 </button>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+            ))
+          )}
+        </div>
+      )}
     </div>
   );
 }

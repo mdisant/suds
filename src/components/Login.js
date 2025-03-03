@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import "./Auth.css"; // We'll create this shared CSS file
 
-function Login({ setShowSignup }) {
+function Login({ setShowSignup, setActiveTab }) {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,7 +51,10 @@ function Login({ setShowSignup }) {
       // Sign in with the email
       try {
         await signInWithEmailAndPassword(auth, email, password);
-        // Success - the auth state in App.js will update automatically
+        // Explicitly set active tab to feed after login
+        if (setActiveTab) {
+          setActiveTab("feed");
+        }
       } catch (authErr) {
         console.error("Authentication error:", authErr);
         

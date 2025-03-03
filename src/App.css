@@ -1,65 +1,26 @@
-/* Base styles */
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #fffbeb;
-  color: #4b5563;
-}
-
-/* App container */
+/* General layout */
 .app-container {
+  background-color: #fffbeb; /* Warm cream background */
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
 /* Main content area */
 .main-content {
-  flex: 1;
-  max-width: 1200px;
-  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
-  padding: 1.5rem;
-}
-
-/* Tab navigation */
-.tab-navigation {
-  display: flex;
-  background-color: white;
-  border-radius: 0.75rem;
-  overflow: hidden;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
-}
-
-.tab-button {
-  flex: 1;
   padding: 1rem;
-  text-align: center;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  border: none;
-  background: none;
-  cursor: pointer;
+  background-color: #fffbeb;
 }
 
-.tab-button.active {
-  background-color: #b45309;
-  color: white;
+/* Auth wrapper for login/signup pages */
+.auth-wrapper {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #fffbeb;
 }
 
-.tab-button:not(.active):hover {
-  background-color: #fef3c7;
-}
-
-/* Card styling */
-.card {
-  background-color: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-
-/* Loading animation */
+/* Loading state */
 .loading-container {
   display: flex;
   justify-content: center;
@@ -75,18 +36,24 @@ body {
 .loading-icon {
   display: inline-block;
   animation: bounce 1s infinite;
-  background-color: #b45309;
-  padding: 0.75rem;
+  background-color: #f59e0b; /* amber-500 equivalent */
+  padding: 0.5rem;
   border-radius: 9999px;
 }
 
-.loading-text {
-  margin-top: 1rem;
-  color: #92400e;
-  font-weight: 500;
-  font-size: 1.125rem;
+.loading-icon svg {
+  width: 2rem;
+  height: 2rem;
+  color: white;
 }
 
+.loading-text {
+  margin-top: 0.5rem;
+  color: #92400e; /* amber-800 equivalent */
+  font-weight: 500;
+}
+
+/* Animation */
 @keyframes bounce {
   0%, 100% {
     transform: translateY(-25%);
@@ -98,25 +65,61 @@ body {
   }
 }
 
-/* User stats */
-.user-stats {
-  background-color: white;
+/* Tab navigation */
+.tab-navigation {
+  display: flex;
+  justify-content: center;
+  margin: 1rem 0 2rem;
+  background-color: #fffbeb;
   border-radius: 0.75rem;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  text-align: center;
+  padding: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.user-stats-count {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #b45309;
-}
-
-.user-stats-label {
-  font-size: 0.875rem;
+.tab-button {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 600;
   color: #6b7280;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.tab-button:hover {
+  color: #92400e;
+  background-color: rgba(254, 243, 199, 0.5);
+}
+
+.tab-button.active {
+  color: #92400e;
+  background-color: rgba(254, 243, 199, 0.8);
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0.25rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1.5rem;
+  height: 2px;
+  background-color: #92400e;
+}
+
+/* Add responsive adjustments */
+@media (max-width: 640px) {
+  .tab-navigation {
+    padding: 0.25rem;
+  }
+  
+  .tab-button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
 }
 
 /* Add more styles for other components as needed */

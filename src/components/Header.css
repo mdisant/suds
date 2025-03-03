@@ -1,45 +1,269 @@
 /* Use Pacifico - a fun, casual script font that works well for beer-related branding */
 @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
 
-.suds-logo {
-  font-family: 'Pacifico', cursive;
-  font-size: 3rem;
-  letter-spacing: 1px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  color: #92400e; /* Amber-800 - a rich beer color */
-  transition: all 0.3s ease;
-  display: block;
-  text-align: center;
-  width: 100%;
-  margin: 0;
-  padding: 0.75rem 0; /* Consistent padding */
-  line-height: 1.1;
+/* App Header */
+.app-header {
+  background-color: #fffbeb; /* Warm cream background */
+  padding: 0.75rem 1rem;
+  z-index: 10;
 }
 
-.suds-logo:hover {
-  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-  transform: scale(1.02);
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Header spacer for login/signup pages */
+.header-spacer {
+  width: 1.5rem;
+}
+
+/* Account Button */
+.account-button {
+  background: none;
+  border: none;
+  color: #92400e;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.account-button:hover {
+  background-color: #fef3c7;
+}
+
+.account-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Logo */
+.logo-button {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.logo-button:hover {
+  background-color: rgba(254, 243, 199, 0.5);
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.app-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #92400e;
+  margin: 0;
+  font-family: 'Pacifico', cursive; /* Google Font */
+}
+
+.beer-logo {
+  font-size: 2.5rem;
+}
+
+/* Menu Button */
+.menu-button {
+  background: none;
+  border: none;
+  color: #92400e;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button:hover {
+  background-color: #fef3c7;
+}
+
+.menu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 1rem;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  width: 200px;
+  z-index: 20;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.menu-item {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  color: #1f2937;
+  transition: background-color 0.2s;
+}
+
+.menu-item:hover {
+  background-color: #f3f4f6;
+}
+
+.menu-item.sign-out {
+  border-top: 1px solid #e5e7eb;
+  color: #ef4444;
+}
+
+.menu-item.sign-out:hover {
+  background-color: #fee2e2;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 640px) {
+  .app-title {
+    font-size: 2rem; /* Still larger but responsive */
+  }
+  
+  .beer-logo {
+    font-size: 2rem;
+  }
 }
 
 /* Header with fixed height */
 .header-beer {
   background-color: #fffbeb; /* Amber-50 - a light beer color */
-  height: 80px; /* Fixed height */
+  height: 70px; /* Fixed height */
+}
+
+/* Three-column layout for the header */
+.header-container {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  height: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header-left {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.header-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* Logo styling */
+.suds-logo {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.5rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+  color: #92400e; /* Amber-800 - a rich beer color */
+  margin: 0;
+  line-height: 1;
+}
+
+/* Account icon styling */
+.account-icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.account-icon-button:hover {
+  transform: scale(1.1);
+}
+
+.account-icon {
+  width: 2rem;
+  height: 2rem;
+  color: #92400e; /* Match the Suds logo color */
+}
+
+@media (min-width: 640px) {
+  .header-beer {
+    height: 80px; /* Slightly taller on larger screens */
+  }
+  
+  .suds-logo {
+    font-size: 3rem;
+  }
+  
+  .account-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+}
+
+.header-actions {
   display: flex;
   align-items: center;
 }
 
-/* Compact header container */
-.header-container {
-  width: 100%;
+.header-action-button {
+  background-color: transparent;
+  color: #92400e;
+  border: 1px solid #92400e;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
 }
 
-@media (min-width: 640px) {
-  .suds-logo {
-    font-size: 3.5rem;
-  }
-  
-  .header-beer {
-    height: 90px; /* Slightly taller on larger screens */
-  }
+.header-action-button:hover {
+  background-color: #92400e;
+  color: white;
+}
+
+/* Remove these styles if they exist */
+.menu-button,
+.dropdown-menu,
+.menu-item {
+  display: none;
 }
